@@ -16,4 +16,10 @@ abstract class Syndicator {
 
 	const VERSION = '0.1.0';
 
+	const FORMAT_RSS2 = 'rss2';
+	const FORMAT_ATOM = 'atom';
+
+	const CONTENTTYPE_RSS2 = 'application/rss+xml';
+	const CONTENTTYPE_ATOM = 'application/atom+xml';
+
 }
