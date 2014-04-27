@@ -2,18 +2,13 @@
 namespace Nezaniel\Syndicator\Dto\Rss2;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "Nezaniel.Feeder".       *
+ * This script belongs to the composer package "Nezaniel.Syndicator".     *
  *                                                                        *
  * It is free software; you can redistribute it and/or modify it under    *
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
-use Doctrine\Common\Collections\ArrayCollection;
 use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
-use Nezaniel\Syndicator\Dto\Rss2\Exception\MissingItemDescriptionException;
-use TYPO3\Flow\Annotations as Flow;
 
 /**
  * An RSS item
@@ -43,9 +38,9 @@ class Item implements XmlWriterSerializableInterface {
 	protected $author = '';
 
 	/**
-	 * @var array
+	 * @var \SplObjectStorage<Category>
 	 */
-	protected $categories = array();
+	protected $categories;
 
 	/**
 	 * @var string
@@ -63,9 +58,9 @@ class Item implements XmlWriterSerializableInterface {
 	protected $guid = '';
 
 	/**
-	 * @var string
+	 * @var \DateTime
 	 */
-	protected $pubDate = '';
+	protected $pubDate;
 
 	/**
 	 * @var Source
@@ -74,36 +69,38 @@ class Item implements XmlWriterSerializableInterface {
 
 
 	/**
-	 * @param string $title
-	 * @param string $link
-	 * @param string $description
-	 * @param string $author
-	 * @param ArrayCollection $categories
-	 * @param string $comments
-	 * @param Enclosure $enclosure
-	 * @param string $guid
-	 * @param string $pubDate
-	 * @param Source $source
-	 * @throws MissingItemDescriptionException
+	 * @param string            $title
+	 * @param string            $link
+	 * @param string            $description
+	 * @param string            $author
+	 * @param \SplObjectStorage $categories
+	 * @param string            $comments
+	 * @param Enclosure         $enclosure
+	 * @param string            $guid
+	 * @param \DateTime         $pubDate
+	 * @param Source            $source
 	 */
-	public function __construct($title = '', $link = '', $description = '', $author = '', ArrayCollection $categories = NULL, $comments = '',
-								Enclosure $enclosure = NULL, $guid = '', $pubDate = '', Source $source = NULL) {
+	public function __construct($title = '', $link = '', $description = '', $author = '', \SplObjectStorage $categories = NULL, $comments = '',
+		Enclosure $enclosure = NULL, $guid = '', \DateTime $pubDate = NULL, Source $source = NULL) {
 
-		if ($title === '' && $description === '') {
-			throw new MissingItemDescriptionException('For creating an RSS item, at least title or description must be given', 1398432247);
-		}
-		$this->title = $title;
-		$this->link = $link;
-		$this->description = $description;
+			$this->title = $title;
+			$this->link = $link;
+			$this->description = $description;
+			$this->author = $author;
+			$this->categories = ($categories !== NULL ? $categories : new \SplObjectStorage());
+			$this->comments = $comments;
+			$this->enclosure = $enclosure;
+			$this->guid = $guid;
+			$this->pubDate = $pubDate;
+			$this->source = $source;
+	}
+
+
+	/**
+	 * @param string $author
+	 */
+	public function setAuthor($author) {
 		$this->author = $author;
-		if ($categories instanceof ArrayCollection) {
-			$this->categories = $categories->toArray();
-		}
-		$this->comments = $comments;
-		$this->enclosure = $enclosure;
-		$this->guid = $guid;
-		$this->pubDate = $pubDate;
-		$this->source = $source;
 	}
 
 	/**
@@ -114,10 +111,44 @@ class Item implements XmlWriterSerializableInterface {
 	}
 
 	/**
-	 * @return Category[]
+	 * @param \SplObjectStorage $categories
+	 * @return void
+	 */
+	public function setCategories(\SplObjectStorage $categories) {
+		$this->categories = $categories;
+	}
+
+	/**
+	 * @return \SplObjectStorage<Category>
 	 */
 	public function getCategories() {
 		return $this->categories;
+	}
+
+	/**
+	 * @param Category $category
+	 * @return $this;
+	 */
+	public function addCategory(Category $category) {
+		$this->categories->attach($category);
+		return $this;
+	}
+
+	/**
+	 * @param Category $category
+	 * @return $this
+	 */
+	public function removeCategory(Category $category) {
+		$this->categories->detach($category);
+		return $this;
+	}
+
+	/**
+	 * @param string $comments
+	 * @return void
+	 */
+	public function setComments($comments) {
+		$this->comments = $comments;
 	}
 
 	/**
@@ -128,10 +159,26 @@ class Item implements XmlWriterSerializableInterface {
 	}
 
 	/**
+	 * @param string $description
+	 * @return void
+	 */
+	public function setDescription($description) {
+		$this->description = $description;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getDescription() {
 		return $this->description;
+	}
+
+	/**
+	 * @param Enclosure $enclosure
+	 * @return void
+	 */
+	public function setEnclosure($enclosure) {
+		$this->enclosure = $enclosure;
 	}
 
 	/**
@@ -142,10 +189,26 @@ class Item implements XmlWriterSerializableInterface {
 	}
 
 	/**
+	 * @param string $guid
+	 * @return void
+	 */
+	public function setGuid($guid) {
+		$this->guid = $guid;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getGuid() {
 		return $this->guid;
+	}
+
+	/**
+	 * @param string $link
+	 * @return void
+	 */
+	public function setLink($link) {
+		$this->link = $link;
 	}
 
 	/**
@@ -156,10 +219,26 @@ class Item implements XmlWriterSerializableInterface {
 	}
 
 	/**
-	 * @return string
+	 * @param \DateTime $pubDate
+	 * @return void
+	 */
+	public function setPubDate(\DateTime $pubDate) {
+		$this->pubDate = $pubDate;
+	}
+
+	/**
+	 * @return \DateTime
 	 */
 	public function getPubDate() {
 		return $this->pubDate;
+	}
+
+	/**
+	 * @param Source $source
+	 * @return void
+	 */
+	public function setSource($source) {
+		$this->source = $source;
 	}
 
 	/**
@@ -167,6 +246,14 @@ class Item implements XmlWriterSerializableInterface {
 	 */
 	public function getSource() {
 		return $this->source;
+	}
+
+	/**
+	 * @param string $title
+	 * @return void
+	 */
+	public function setTitle($title) {
+		$this->title = $title;
 	}
 
 	/**
@@ -185,24 +272,33 @@ class Item implements XmlWriterSerializableInterface {
 	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'item') {
 		$feedWriter->startElement($tagName);
 
-		if ($this->getTitle() !== '') $feedWriter->writeElement('title', $this->getTitle());
-		if ($this->getLink() !== '') $feedWriter->writeElement('link', $this->getLink());
+		if ($this->getTitle() !== '')
+			$feedWriter->writeElement('title', $this->getTitle());
+		if ($this->getLink() !== '')
+			$feedWriter->writeElement('link', $this->getLink());
 		if ($this->getDescription() !== '')  {
 			$feedWriter->startElement('description');
 			$feedWriter->writeCdata($this->getDescription());
 			$feedWriter->endElement();
 		}
-		if ($this->getAuthor() !== '') $feedWriter->writeElement('author', $this->getAuthor());
-		if (sizeof($this->getCategories()) > 0) {
+		if ($this->getAuthor() !== '')
+			$feedWriter->writeElement('author', $this->getAuthor());
+		if ($this->getCategories()->count() > 0) {
 			foreach ($this->getCategories() as $category) {
+				/** @var Category $category */
 				$category->xmlSerializeUsingWriter($feedWriter);
 			}
 		}
-		if ($this->getComments() !== '') $feedWriter->writeElement('comments', $this->getComments());
-		if ($this->getEnclosure() !== NULL) $this->getEnclosure()->xmlSerialize($feedWriter);
-		if ($this->getGuid() !== '') $feedWriter->writeElement('guid', $this->getGuid());
-		if ($this->getPubDate() !== '') $feedWriter->writeElement('pubDate', $this->getPubDate());
-		if ($this->getSource() !== NULL) $this->getSource()->xmlSerialize($feedWriter);
+		if ($this->getComments() !== '')
+			$feedWriter->writeElement('comments', $this->getComments());
+		if ($this->getEnclosure() instanceof Enclosure)
+			$this->getEnclosure()->xmlSerializeUsingWriter($feedWriter);
+		if ($this->getGuid() !== '')
+			$feedWriter->writeElement('guid', $this->getGuid());
+		if ($this->getPubDate() instanceof \DateTime)
+			$feedWriter->writeElement('pubDate', $this->getPubDate()->format(\DateTime::RSS));
+		if ($this->getSource() instanceof Source)
+			$this->getSource()->xmlSerializeUsingWriter($feedWriter);
 
 		$feedWriter->endElement();
 	}

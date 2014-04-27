@@ -2,34 +2,31 @@
 namespace Nezaniel\Syndicator\Dto\Atom;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "Nezaniel.Feeder".       *
+ * This script belongs to the composer package "Nezaniel.Syndicator".     *
  *                                                                        *
  * It is free software; you can redistribute it and/or modify it under    *
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
+use Nezaniel\Syndicator\Core\Syndicator;
+use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
 use Nezaniel\Syndicator\Dto\AbstractXmlSerializableFeed;
-use TYPO3\Flow\Annotations as Flow;
 
 /**
  * An Atom Feed
  *
  * @see http://www.atomenabled.org/developers/syndication/#feed
  */
-class Feed extends AbstractXmlSerializableFeed {
+class Feed extends AbstractXmlSerializableFeed implements XmlWriterSerializableInterface {
 
+	/* Required elements */
 	/**
-	 * The feeded Node's uuid
-	 * The Feed does not have an own one!
-	 *
 	 * @var string
 	 */
-	protected $nodeUuid;
+	protected $id;
 
 	/**
-	 * @var \Nezaniel\Syndicator\Domain\Model\Atom\Text
+	 * @var Text
 	 */
 	protected $title;
 
@@ -38,251 +35,439 @@ class Feed extends AbstractXmlSerializableFeed {
 	 */
 	protected $updated;
 
+
+	/* Recommended elements */
 	/**
-	 * @var \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Person>
+	 * @var \SplObjectStorage<Person>
 	 */
 	protected $authors;
 
 	/**
-	 * @var \Nezaniel\Syndicator\Domain\Model\Atom\Link
+	 * @var \SplObjectStorage<Link>
 	 */
-	protected $link;
+	protected $links;
 
+
+	/* Optional elements */
 	/**
-	 * @var \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Category>
+	 * @var \SplObjectStorage<Category>
 	 */
 	protected $categories;
 
 	/**
-	 * @var \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Person>
+	 * @var \SplObjectStorage<Person>
 	 */
 	protected $contributors;
 
 	/**
-	 * @var \Nezaniel\Syndicator\Domain\Model\Atom\Generator
+	 * @var Generator
 	 */
 	protected $generator;
 
 	/**
-	 * @var \TYPO3\Media\Domain\Model\Image
+	 * @var string
 	 */
 	protected $icon;
 
 	/**
-	 * @var \TYPO3\Media\Domain\Model\Image
+	 * @var string
 	 */
 	protected $logo;
 
 	/**
-	 * @var \Nezaniel\Syndicator\Domain\Model\Atom\Text
+	 * @var Text
 	 */
 	protected $rights;
 
 	/**
-	 * @var \Nezaniel\Syndicator\Domain\Model\Atom\Text
+	 * @var Text
 	 */
 	protected $subtitle;
 
 	/**
-	 * @var \array<string>
+	 * @var \SplObjectStorage<Entry>
 	 */
-	protected $additionalRequiredNamespaces;
+	protected $entries;
 
 
 	/**
-	 * @param string $nodeUuid
-	 * @param \Nezaniel\Syndicator\Domain\Model\Atom\Text $title
-	 * @param \DateTime $updated
-	 * @param \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Person> $authors
-	 * @param \Nezaniel\Syndicator\Domain\Model\Atom\Link $link
-	 * @param \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Category> $categories
-	 * @param \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Person> $contributors
-	 * @param \Nezaniel\Syndicator\Domain\Model\Atom\Generator $generator
-	 * @param \TYPO3\Media\Domain\Model\Image $icon
-	 * @param \TYPO3\Media\Domain\Model\Image $logo
-	 * @param \Nezaniel\Syndicator\Domain\Model\Atom\Text $rights
-	 * @param \Nezaniel\Syndicator\Domain\Model\Atom\Text $subtitle
-	 * @param \array<string> $additionalRequiredNamespaces
-	 * @todo handle items
+	 * @param string            $id
+	 * @param Text              $title
+	 * @param \DateTime         $updated
+	 * @param \SplObjectStorage $authors
+	 * @param \SplObjectStorage $links
+	 * @param \SplObjectStorage $categories
+	 * @param \SplObjectStorage $contributors
+	 * @param Generator         $generator
+	 * @param string            $icon
+	 * @param string            $logo
+	 * @param Text              $rights
+	 * @param Text              $subtitle
+	 * @param \SplObjectStorage $entries
 	 */
-	function __construct($nodeUuid, \Nezaniel\Syndicator\Domain\Model\Atom\Text $title, \DateTime $updated, \Doctrine\Common\Collections\Collection $authors = NULL, \Nezaniel\Syndicator\Domain\Model\Atom\Link $link = NULL, \Doctrine\Common\Collections\Collection $categories = NULL, \Doctrine\Common\Collections\Collection $contributors = NULL, \Nezaniel\Syndicator\Domain\Model\Atom\Generator $generator = NULL,  \TYPO3\Media\Domain\Model\Image $icon = NULL, \TYPO3\Media\Domain\Model\Image $logo = NULL, \Nezaniel\Syndicator\Domain\Model\Atom\Text $rights = NULL, \Nezaniel\Syndicator\Domain\Model\Atom\Text $subtitle = NULL, array $additionalRequiredNamespaces = array()) {
-		$this->nodeUuid = $nodeUuid;
-		$this->title = $title;
-		$this->updated = $updated;
+	public function __construct($id, Text $title, \DateTime $updated,
+		\SplObjectStorage $authors = NULL, \SplObjectStorage $links = NULL,
+		\SplObjectStorage $categories = NULL, \SplObjectStorage $contributors = NULL, Generator $generator = NULL,
+		$icon = '', $logo = '', Text $rights = NULL, Text $subtitle = NULL, \SplObjectStorage $entries = NULL) {
+
+			$this->id = $id;
+			$this->title = $title;
+			$this->updated = $updated;
+
+			$this->authors = ($authors !== NULL ? $authors : new \SplObjectStorage());
+			$this->links = ($links !== NULL ? $links : new \SplObjectStorage());
+
+			$this->categories = ($categories !== NULL ? $categories : new \SplObjectStorage());
+			$this->contributors = ($contributors !== NULL ? $contributors : new \SplObjectStorage());
+			$this->generator = ($generator !== NULL ? $generator : new Generator('Nezaniel.Syndicator', 'https://github.com/nezaniel/Nezaniel.Syndicator', Syndicator::VERSION));
+			$this->icon = $icon;
+			$this->logo = $logo;
+			$this->rights = $rights;
+			$this->subtitle = $subtitle;
+			$this->entries = ($entries !== NULL ? $entries : new \SplObjectStorage());
+	}
+
+	/**
+	 * @param \SplObjectStorage $authors
+	 * @return void
+	 */
+	public function setAuthors(\SplObjectStorage $authors) {
 		$this->authors = $authors;
-		$this->link = $link;
-		$this->categories = $categories;
-		$this->contributors = $contributors;
-		$this->generator = $generator;
-		$this->icon = $icon;
-		$this->logo = $logo;
-		$this->rights = $rights;
-		$this->subtitle = $subtitle;
-		$this->additionalRequiredNamespaces = $additionalRequiredNamespaces;
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getNodeUuid() {
-		return $this->nodeUuid;
 	}
 
 	/**
-	 * @return \Nezaniel\Syndicator\Domain\Model\Atom\Text
-	 */
-	public function getTitle() {
-		return $this->title;
-	}
-
-	/**
-	 * @return \DateTime
-	 * @todo iterate over entries
-	 */
-	public function getUpdated() {
-		return $this->updated;
-	}
-
-	/**
-	 * @return \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Person>
+	 * @return \SplObjectStorage<Person>
 	 */
 	public function getAuthors() {
 		return $this->authors;
 	}
 
 	/**
-	 * @return \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Link>
+	 * @param Person $author
+	 * @return $this
 	 */
-	public function getLink() {
-		return $this->link;
+	public function addAuthor(Person $author) {
+		$this->authors->attach($author);
+		return $this;
 	}
 
 	/**
-	 * @return \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Person>
+	 * @param Person $author
+	 * @return $this
+	 */
+	public function removeAuthor(Person $author) {
+		$this->authors->detach($author);
+		return $this;
+	}
+
+	/**
+	 * @param \SplObjectStorage $categories
+	 * @return void
+	 */
+	public function setCategories(\SplObjectStorage $categories) {
+		$this->categories = $categories;
+	}
+
+	/**
+	 * @return \SplObjectStorage
 	 */
 	public function getCategories() {
 		return $this->categories;
 	}
 
 	/**
-	 * @return \Doctrine\Common\Collections\Collection<\Nezaniel\Syndicator\Domain\Model\Atom\Person>
+	 * @param Category $category
+	 * @return $this
+	 */
+	public function addCategory(Category $category) {
+		$this->categories->attach($category);
+		return $this;
+	}
+
+	/**
+	 * @param Category $category
+	 * @return $this
+	 */
+	public function removeCategory(Category $category) {
+		$this->categories->detach($category);
+		return $this;
+	}
+
+	/**
+	 * @param \SplObjectStorage $contributors
+	 * @return void
+	 */
+	public function setContributors(\SplObjectStorage $contributors) {
+		$this->contributors = $contributors;
+	}
+
+	/**
+	 * @return \SplObjectStorage
 	 */
 	public function getContributors() {
 		return $this->contributors;
 	}
 
 	/**
-	 * @return \Nezaniel\Syndicator\Domain\Model\Atom\Generator
+	 * @param Person $contributor
+	 * @return $this
+	 */
+	public function addContributor(Person $contributor) {
+		$this->contributors->attach($contributor);
+		return $this;
+	}
+
+	/**
+	 * @param Person $contributor
+	 * @return $this
+	 */
+	public function removeContributor(Person $contributor) {
+		$this->contributors->detach($contributor);
+		return $this;
+	}
+
+	/**
+	 * @param \SplObjectStorage $entries
+	 * @return void
+	 */
+	public function setEntries(\SplObjectStorage $entries) {
+		$this->entries = $entries;
+	}
+
+	/**
+	 * @return \SplObjectStorage
+	 */
+	public function getEntries() {
+		return $this->entries;
+	}
+
+	/**
+	 * @param Entry $entry
+	 * @return $this
+	 */
+	public function addEntry(Entry $entry) {
+		$this->entries->attach($entry);
+		return $this;
+	}
+
+	/**
+	 * @param Generator $generator
+	 * @return void
+	 */
+	public function setGenerator($generator) {
+		$this->generator = $generator;
+	}
+
+	/**
+	 * @return Generator
 	 */
 	public function getGenerator() {
 		return $this->generator;
 	}
 
 	/**
-	 * @return \TYPO3\Media\Domain\Model\Image
+	 * @param string $icon
+	 * @return void
+	 */
+	public function setIcon($icon) {
+		$this->icon = $icon;
+	}
+
+	/**
+	 * @return string
 	 */
 	public function getIcon() {
 		return $this->icon;
 	}
 
 	/**
-	 * @return \TYPO3\Media\Domain\Model\Image
+	 * @param string $id
+	 * @return void
+	 */
+	public function setId($id) {
+		$this->id = $id;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getId() {
+		return $this->id;
+	}
+
+	/**
+	 * @param \SplObjectStorage $links
+	 * @return void
+	 */
+	public function setLinks(\SplObjectStorage $links) {
+		$this->links = $links;
+	}
+
+	/**
+	 * @return \SplObjectStorage
+	 */
+	public function getLinks() {
+		return $this->links;
+	}
+
+	/**
+	 * @param Link $link
+	 * @return $this
+	 */
+	public function addLink(Link $link) {
+		$this->links->attach($link);
+		return $this;
+	}
+
+	/**
+	 * @param Link $link
+	 * @return $this
+	 */
+	public function removeLink(Link $link) {
+		$this->links->detach($link);
+		return $this;
+	}
+
+	/**
+	 * @param string $logo
+	 * @return void
+	 */
+	public function setLogo($logo) {
+		$this->logo = $logo;
+	}
+
+	/**
+	 * @return string
 	 */
 	public function getLogo() {
 		return $this->logo;
 	}
 
 	/**
-	 * @return \Nezaniel\Syndicator\Domain\Model\Atom\Text
+	 * @param Text $rights
+	 * @return void
+	 */
+	public function setRights(Text $rights) {
+		$this->rights = $rights;
+	}
+
+	/**
+	 * @return Text
 	 */
 	public function getRights() {
 		return $this->rights;
 	}
 
 	/**
-	 * @return \Nezaniel\Syndicator\Domain\Model\Atom\Text
+	 * @param Text $subtitle
+	 * @return void
+	 */
+	public function setSubtitle(Text $subtitle) {
+		$this->subtitle = $subtitle;
+	}
+
+	/**
+	 * @return Text
 	 */
 	public function getSubtitle() {
 		return $this->subtitle;
 	}
 
 	/**
-	 * @return \array<string>
+	 * @param Text $title
+	 * @return void
 	 */
-	public function getAdditionalRequiredNamespaces() {
-		return $this->additionalRequiredNamespaces;
+	public function setTitle(Text $title) {
+		$this->title = $title;
+	}
+
+	/**
+	 * @return Text
+	 */
+	public function getTitle() {
+		return $this->title;
+	}
+
+	/**
+	 * @param \DateTime $updated
+	 * @return void
+	 */
+	public function setUpdated(\DateTime $updated) {
+		$this->updated = $updated;
+	}
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getUpdated() {
+		return $this->updated;
 	}
 
 
 	/**
 	 * @param \XMLWriter $feedWriter
 	 * @return void
-	 * @todo implement this
 	 */
 	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
-
+		$this->xmlSerializeUsingWriter($feedWriter);
 	}
 
 	/**
-	 * @return string
+	 * @param \XMLWriter $feedWriter
+	 * @param string     $tagName
+	 * @return void
 	 */
-	public function xml() {
+	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'feed') {
 		$feedWriter->startElement('feed');
 		$feedWriter->writeAttribute('xmlns', 'http://www.w3.org/2005/Atom');
-		foreach ($this->getAdditionalRequiredNamespaces() as $namespace => $uri) {
-			$feedWriter->writeAttribute('xmlns:' . $namespace, $uri);
-		}
 
-		// Required
-		$feedWriter->writeElement('id', 'urn:uuid:' . $this->getNodeUuid());
-		$this->title->toXML($feedWriter, 'title');
+		$feedWriter->writeElement('id', $this->getId());
+		$this->getTitle()->xmlSerializeUsingWriter($feedWriter, 'title');
 		$feedWriter->writeElement('updated', $this->getUpdated()->format(\DateTime::ATOM));
 
-		// Recommended
-		if ($this->getAuthors() instanceof \Doctrine\Common\Collections\Collection && $this->getAuthors()->count() > 0) {
+		if ($this->getAuthors()->count() > 0) {
 			foreach ($this->getAuthors() as $author) {
-				$author->toXML($feedWriter, 'author');
+				/** @var Person $author */
+				$author->xmlSerializeUsingWriter($feedWriter, 'author');
 			}
 		}
-		if ($this->getLink() instanceof Link) {
-			$this->getLink()->toXML($feedWriter);
+		if ($this->getLinks()->count() > 0) {
+			foreach ($this->getLinks() as $link) {
+				/** @var Link $link */
+				$link->xmlSerializeUsingWriter($feedWriter);
+			}
 		}
 
-		// Optional
-		if ($this->getCategories() instanceof \Doctrine\Common\Collections\Collection && $this->getCategories()->count() > 0) {
+		if ($this->getCategories()->count() > 0) {
 			foreach ($this->getCategories() as $category) {
-				$category->toXML($feedWriter);
+				/** @var Category $category */
+				$category->xmlSerializeUsingWriter($feedWriter);
 			}
 		}
-		if ($this->getContributors() instanceof \Doctrine\Common\Collections\Collection && $this->getContributors()->count() > 0) {
+		if ($this->getContributors()->count() > 0) {
 			foreach ($this->getContributors() as $contributor) {
-				$contributor->toXML($feedWriter, 'contributor');
+				/** @var Person $contributor */
+				$contributor->xmlSerializeUsingWriter($feedWriter, 'contributor');
 			}
 		}
-		if ($this->getGenerator() instanceof Generator) {
-			$this->getGenerator()->toXML($feedWriter);
+		if ($this->getGenerator() instanceof Generator)
+			$this->getGenerator()->xmlSerializeUsingWriter($feedWriter);
+		if ($this->getIcon() !== '')
+			$feedWriter->writeElement('icon', $this->getIcon());
+		if ($this->getLogo() !== '')
+			$feedWriter->writeElement('logo', $this->getLogo());
+		if ($this->getRights() instanceof Text)
+			$this->getRights()->xmlSerializeUsingWriter($feedWriter, 'rights');
+		if ($this->getSubtitle() instanceof Text)
+			$this->getSubtitle()->xmlSerializeUsingWriter($feedWriter, 'subtitle');
+		if ($this->getEntries()->count() > 0) {
+			foreach ($this->getEntries() as $entry) {
+				/** @var Entry $entry */
+				$entry->xmlSerializeUsingWriter($feedWriter);
+			}
 		}
-		if ($this->getIcon() instanceof \TYPO3\Media\Domain\Model\Image) {
-			/** @todo use icon variant? */
-			$feedWriter->writeElement('icon', $this->getIcon()->getResource()->getUri());
-		}
-		if ($this->getLogo() instanceof \TYPO3\Media\Domain\Model\Image) {
-			/** @todo use logo variant? */
-			$feedWriter->writeElement('logo', $this->getLogo()->getResource()->getUri());
-		}
-		if ($this->getRights() instanceof Text) {
-			$this->getRights()->toXML($feedWriter, 'rights');
-		}
-		if ($this->getSubtitle() instanceof Text) {
-			$this->getSubtitle()->toXML($feedWriter, 'subtitle');
-		}
-
-		// Extended
 
 		$feedWriter->endElement();
-		$feedWriter->endDocument();
-		return $feedWriter->outputMemory();
 	}
 
 }

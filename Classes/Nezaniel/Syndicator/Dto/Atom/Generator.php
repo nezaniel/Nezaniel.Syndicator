@@ -2,16 +2,13 @@
 namespace Nezaniel\Syndicator\Dto\Atom;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "Nezaniel.Feeder".       *
+ * This script belongs to the composer package "Nezaniel.Syndicator".     *
  *                                                                        *
  * It is free software; you can redistribute it and/or modify it under    *
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
-use TYPO3\Flow\Annotations as Flow;
 
 /**
  * An Atom generator construct
@@ -77,12 +74,10 @@ class Generator implements XmlWriterSerializableInterface {
 	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'generator') {
 		$feedWriter->startElement($tagName);
 
-		if ($this->getUri() !== '') {
+		if ($this->getUri() !== '')
 			$feedWriter->writeAttribute('uri', $this->getUri());
-		}
-		if ($this->getVersion() !== '') {
+		if ($this->getVersion() !== '')
 			$feedWriter->writeAttribute('version', $this->getVersion());
-		}
 		$feedWriter->writeRaw($this->getName());
 
 		$feedWriter->endElement();

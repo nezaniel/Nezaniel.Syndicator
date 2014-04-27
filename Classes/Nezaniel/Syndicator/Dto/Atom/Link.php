@@ -2,16 +2,13 @@
 namespace Nezaniel\Syndicator\Dto\Atom;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "Nezaniel.Feeder".       *
+ * This script belongs to the composer package "Nezaniel.Syndicator".     *
  *                                                                        *
  * It is free software; you can redistribute it and/or modify it under    *
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
-use TYPO3\Flow\Annotations as Flow;
 
 /**
  * An Atom link construct
@@ -85,7 +82,7 @@ class Link implements XmlWriterSerializableInterface{
 	 * @param string $title
 	 * @param integer $length
 	 */
-	function __construct($href, $rel = '', $type = '', $hreflang = '', $title = '', $length = 0) {
+	function __construct($href, $rel = '', $type = '', $hreflang = '', $title = '', $length = NULL) {
 		$this->href = $href;
 		$this->rel = $rel;
 		$this->type = $type;
@@ -103,10 +100,24 @@ class Link implements XmlWriterSerializableInterface{
 	}
 
 	/**
+	 * @param string $href
+	 */
+	public function setHref($href) {
+		$this->href = $href;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getRel() {
 		return $this->rel;
+	}
+
+	/**
+	 * @param string $rel
+	 */
+	public function setRel($rel) {
+		$this->rel = $rel;
 	}
 
 	/**
@@ -117,10 +128,24 @@ class Link implements XmlWriterSerializableInterface{
 	}
 
 	/**
+	 * @param string $type
+	 */
+	public function setType($type) {
+		$this->type = $type;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getHreflang() {
 		return $this->hreflang;
+	}
+
+	/**
+	 * @param string $hreflang
+	 */
+	public function setHreflang($hreflang) {
+		$this->hreflang = $hreflang;
 	}
 
 	/**
@@ -131,10 +156,24 @@ class Link implements XmlWriterSerializableInterface{
 	}
 
 	/**
+	 * @param string $title
+	 */
+	public function setTitle($title) {
+		$this->title = $title;
+	}
+
+	/**
 	 * @return integer
 	 */
 	public function getLength() {
 		return $this->length;
+	}
+
+	/**
+	 * @param int $length
+	 */
+	public function setLength($length) {
+		$this->length = $length;
 	}
 	
 
@@ -147,21 +186,16 @@ class Link implements XmlWriterSerializableInterface{
 		$feedWriter->startElement($tagName);
 
 		$feedWriter->writeAttribute('href', $this->getHref());
-		if ($this->getRel() !== '') {
+		if ($this->getRel() !== '')
 			$feedWriter->writeAttribute('rel', $this->getRel());
-		}
-		if ($this->getType() !== '') {
+		if ($this->getType() !== '')
 			$feedWriter->writeAttribute('type', $this->getType());
-		}
-		if ($this->getHreflang() !== '') {
+		if ($this->getHreflang() !== '')
 			$feedWriter->writeAttribute('hreflang', $this->getHreflang());
-		}
-		if ($this->getTitle() !== '') {
+		if ($this->getTitle() !== '')
 			$feedWriter->writeAttribute('title', $this->getTitle());
-		}
-		if ($this->getLength() > 0) {
+		if ($this->getLength() !== NULL)
 			$feedWriter->writeAttribute('length', $this->getLength());
-		}
 
 		$feedWriter->endElement();
 	}

@@ -1,25 +1,19 @@
 <?php
-namespace Nezaniel\Syndicator\Dto\Rss2\Exception;
+namespace Nezaniel\Syndicator\Core;
 
 /*                                                                        *
- * This script belongs to the TYPO3 Flow package "Nezaniel.Feeder".       *
+ * This script belongs to the composer package "Nezaniel.Syndicator".     *
  *                                                                        *
  * It is free software; you can redistribute it and/or modify it under    *
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
- *                                                                        *
- * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
-use Nezaniel\Syndicator\Dto\Exception;
 
 /**
- * A "Missing Item Description" exception
+ * A container class for information about this package
  */
-class MissingItemDescriptionException extends Exception {
+abstract class Syndicator {
 
-	/**
-	 * @var integer
-	 */
-	protected $statusCode = 500;
+	const VERSION = '0.1.0';
 
 }
