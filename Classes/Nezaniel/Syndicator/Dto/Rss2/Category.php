@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An RSS category
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#ltcategorygtSubelementOfLtitemgt
  */
-class Category implements XmlWriterSerializableInterface {
+class Category extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var string
@@ -26,6 +26,11 @@ class Category implements XmlWriterSerializableInterface {
 	 * @var string
 	 */
 	protected $domain = '';
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'category';
 
 
 	/**
@@ -55,11 +60,10 @@ class Category implements XmlWriterSerializableInterface {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'category') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		if ($this->getDomain() !== '') {
 			$feedWriter->writeAttribute('domain', $this->getDomain());

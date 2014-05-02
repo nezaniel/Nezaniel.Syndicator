@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Atom;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An Atom person construct
  *
  * @see http://www.atomenabled.org/developers/syndication/#person
  */
-class Person implements XmlWriterSerializableInterface {
+class Person extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var string
@@ -69,11 +69,10 @@ class Person implements XmlWriterSerializableInterface {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName) {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeElement('name', $this->getName());
 		if ($this->getUri() !== NULL) {

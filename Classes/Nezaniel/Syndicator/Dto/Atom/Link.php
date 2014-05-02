@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Atom;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An Atom link construct
  *
  * @see http://www.atomenabled.org/developers/syndication/#link
  */
-class Link implements XmlWriterSerializableInterface{
+class Link extends AbstractXmlWriterSerializable{
 
 	/**
 	 * An alternate representation of the entry or feed, for example a permalink to the html version of the entry, or the front page of the weblog.
@@ -72,6 +72,11 @@ class Link implements XmlWriterSerializableInterface{
 	 * @var integer
 	 */
 	protected $length = 0;
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'link';
 
 
 	/**
@@ -179,11 +184,10 @@ class Link implements XmlWriterSerializableInterface{
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'link') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeAttribute('href', $this->getHref());
 		if ($this->getRel() !== '')

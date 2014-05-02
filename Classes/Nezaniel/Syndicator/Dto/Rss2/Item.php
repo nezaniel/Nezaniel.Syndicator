@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An RSS item
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#hrelementsOfLtitemgt
  */
-class Item implements XmlWriterSerializableInterface {
+class Item extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var string
@@ -58,6 +58,11 @@ class Item implements XmlWriterSerializableInterface {
 	protected $guid = '';
 
 	/**
+	 * @var boolean
+	 */
+	protected $permaLink = FALSE;
+
+	/**
 	 * @var \DateTime
 	 */
 	protected $pubDate;
@@ -66,6 +71,11 @@ class Item implements XmlWriterSerializableInterface {
 	 * @var Source
 	 */
 	protected $source;
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'item';
 
 
 	/**
@@ -77,11 +87,12 @@ class Item implements XmlWriterSerializableInterface {
 	 * @param string            $comments
 	 * @param Enclosure         $enclosure
 	 * @param string            $guid
+	 * @param boolean           $permaLink
 	 * @param \DateTime         $pubDate
 	 * @param Source            $source
 	 */
 	public function __construct($title = '', $link = '', $description = '', $author = '', \SplObjectStorage $categories = NULL, $comments = '',
-		Enclosure $enclosure = NULL, $guid = '', \DateTime $pubDate = NULL, Source $source = NULL) {
+		Enclosure $enclosure = NULL, $guid = '', $permaLink = FALSE, \DateTime $pubDate = NULL, Source $source = NULL) {
 
 			$this->title = $title;
 			$this->link = $link;
@@ -91,6 +102,7 @@ class Item implements XmlWriterSerializableInterface {
 			$this->comments = $comments;
 			$this->enclosure = $enclosure;
 			$this->guid = $guid;
+			$this->permaLink = $permaLink;
 			$this->pubDate = $pubDate;
 			$this->source = $source;
 	}
@@ -204,6 +216,20 @@ class Item implements XmlWriterSerializableInterface {
 	}
 
 	/**
+	 * @param boolean $permaLink
+	 */
+	public function setPermaLink($permaLink) {
+		$this->permaLink = $permaLink;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getPermaLink() {
+		return $this->permaLink;
+	}
+
+	/**
 	 * @param string $link
 	 * @return void
 	 */
@@ -266,11 +292,10 @@ class Item implements XmlWriterSerializableInterface {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'item') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		if ($this->getTitle() !== '')
 			$feedWriter->writeElement('title', $this->getTitle());
@@ -286,19 +311,23 @@ class Item implements XmlWriterSerializableInterface {
 		if ($this->getCategories()->count() > 0) {
 			foreach ($this->getCategories() as $category) {
 				/** @var Category $category */
-				$category->xmlSerializeUsingWriter($feedWriter);
+				$feedWriter->writeRaw($category->xmlSerialize());
 			}
 		}
 		if ($this->getComments() !== '')
 			$feedWriter->writeElement('comments', $this->getComments());
 		if ($this->getEnclosure() instanceof Enclosure)
-			$this->getEnclosure()->xmlSerializeUsingWriter($feedWriter);
-		if ($this->getGuid() !== '')
-			$feedWriter->writeElement('guid', $this->getGuid());
+			$feedWriter->writeRaw($this->getEnclosure()->xmlSerialize());
+		if ($this->getGuid() !== '') {
+			$feedWriter->startElement('guid');
+			$feedWriter->writeAttribute('isPermaLink', $this->getPermaLink()?'true':'false');
+			$feedWriter->writeRaw($this->getGuid());
+			$feedWriter->endElement();
+		}
 		if ($this->getPubDate() instanceof \DateTime)
 			$feedWriter->writeElement('pubDate', $this->getPubDate()->format(\DateTime::RSS));
 		if ($this->getSource() instanceof Source)
-			$this->getSource()->xmlSerializeUsingWriter($feedWriter);
+			$feedWriter->writeRaw($this->getSource()->xmlSerialize());
 
 		$feedWriter->endElement();
 	}

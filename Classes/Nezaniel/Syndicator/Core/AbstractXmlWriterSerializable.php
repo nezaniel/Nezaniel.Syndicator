@@ -1,5 +1,5 @@
 <?php
-namespace Nezaniel\Syndicator\Dto;
+namespace Nezaniel\Syndicator\Core;
 
 /*                                                                        *
  * This script belongs to the composer package "Nezaniel.Syndicator".     *
@@ -8,12 +8,34 @@ namespace Nezaniel\Syndicator\Dto;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlSerializableInterface;
 
 /**
- * An abstract feed
+ * An abstract class for XML serialization using \XMLWriter
+ *
+ * @see http://php.net/manual/de/book.xmlwriter.php
  */
-abstract class AbstractXmlSerializableFeed implements XmlSerializableInterface {
+abstract class AbstractXmlWriterSerializable implements XmlSerializableInterface {
+
+	/**
+	 * @var string
+	 */
+	protected $tagName;
+
+
+	/**
+	 * @return string
+	 */
+	public function getTagName() {
+		return $this->tagName;
+	}
+
+	/**
+	 * @param string $tagName
+	 */
+	public function setTagName($tagName) {
+		$this->tagName = $tagName;
+	}
+
 
 	/**
 	 * @return string
@@ -21,19 +43,16 @@ abstract class AbstractXmlSerializableFeed implements XmlSerializableInterface {
 	public function xmlSerialize() {
 		$feedWriter = new \XMLWriter();
 		$feedWriter->openMemory();
-		$feedWriter->setIndent(TRUE);
-		$feedWriter->startDocument('1.0', 'utf-8');
-
+		$feedWriter->setIndent(FALSE);
 		$this->xmlSerializeInternal($feedWriter);
-
-		$feedWriter->endDocument();
 		return $feedWriter->outputMemory();
 	}
 
+
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @return void
+	 * @return string
 	 */
-	abstract public function xmlSerializeInternal(\XMLWriter $feedWriter);
+	abstract protected function xmlSerializeInternal(\XMLWriter $feedWriter);
 
 }

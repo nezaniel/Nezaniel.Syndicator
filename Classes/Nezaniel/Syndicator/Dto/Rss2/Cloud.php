@@ -8,7 +8,7 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An RSS cloud
@@ -16,7 +16,7 @@ use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
  * @see http://cyber.law.harvard.edu/rss/rss.html#ltcloudgtSubelementOfLtchannelgt
  * @see http://cyber.law.harvard.edu/rss/soapMeetsRss.html#rsscloudInterface
  */
-class Cloud implements XmlWriterSerializableInterface {
+class Cloud extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var string
@@ -42,6 +42,11 @@ class Cloud implements XmlWriterSerializableInterface {
 	 * @var string
 	 */
 	protected $protocol;
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'cloud';
 
 
 	/**
@@ -98,11 +103,10 @@ class Cloud implements XmlWriterSerializableInterface {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'cloud') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeAttribute('domain', $this->getDomain());
 		$feedWriter->writeAttribute('port', $this->getPort());

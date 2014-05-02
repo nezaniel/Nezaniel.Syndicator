@@ -22,6 +22,11 @@ class Content extends Text {
 	 */
 	protected $src = '';
 
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'content';
+
 
 	/**
 	 * @param string $type
@@ -44,11 +49,10 @@ class Content extends Text {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName) {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeAttribute('type', $this->getType());
 		if ($this->getSrc() !== '')

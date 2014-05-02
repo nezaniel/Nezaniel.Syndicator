@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Atom;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An Atom entry construct
  *
  * @see http://www.atomenabled.org/developers/syndication/#entry
  */
-class Entry implements XmlWriterSerializableInterface {
+class Entry extends AbstractXmlWriterSerializable {
 
 	/* Required elements */
 	/**
@@ -24,7 +24,7 @@ class Entry implements XmlWriterSerializableInterface {
 	protected $id;
 
 	/**
-	 * @var string
+	 * @var Text
 	 */
 	protected $title;
 
@@ -82,10 +82,15 @@ class Entry implements XmlWriterSerializableInterface {
 	 */
 	protected $rights;
 
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'entry';
+
 
 	/**
 	 * @param string            $id
-	 * @param string            $title
+	 * @param Text            $title
 	 * @param \DateTime         $updated
 	 * @param \SplObjectStorage $authors
 	 * @param Content           $content
@@ -97,7 +102,7 @@ class Entry implements XmlWriterSerializableInterface {
 	 * @param Feed              $source
 	 * @param Text              $rights
 	 */
-	public function __construct($id, $title, \DateTime $updated,
+	public function __construct($id, Text $title, \DateTime $updated,
 		\SplObjectStorage $authors = NULL, Content $content = NULL, \SplObjectStorage $links = NULL, Text $summary = NULL,
 		\SplObjectStorage $categories = NULL, \SplObjectStorage $contributors = NULL, \DateTime $published = NULL, Feed $source = NULL, Text $rights = NULL) {
 
@@ -331,15 +336,15 @@ class Entry implements XmlWriterSerializableInterface {
 	}
 
 	/**
-	 * @param string $title
+	 * @param Text $title
 	 * @return void
 	 */
-	public function setTitle($title) {
+	public function setTitle(Text $title) {
 		$this->title = $title;
 	}
 
 	/**
-	 * @return string
+	 * @return Text
 	 */
 	public function getTitle() {
 		return $this->title;
@@ -366,48 +371,57 @@ class Entry implements XmlWriterSerializableInterface {
 	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'entry') {
+	public function xmlSerializeInternal(\XMLWriter $feedWriter, $tagName = 'entry') {
 		$feedWriter->startElement($tagName);
 
 		$feedWriter->writeElement('id', $this->getId());
-		$feedWriter->writeElement('title', $this->getTitle());
+		$this->getTitle()->setTagName('title');
+		$feedWriter->writeRaw($this->getTitle()->xmlSerialize());
 		$feedWriter->writeElement('updated', $this->getUpdated()->format(\DateTime::ATOM));
 
 		if ($this->getAuthors()->count() > 0) {
 			foreach ($this->getAuthors() as $author) {
 				/** @var Person $author */
-				$author->xmlSerializeUsingWriter($feedWriter, 'author');
+				$author->setTagName('author');
+				$feedWriter->writeRaw($author->xmlSerialize());
 			}
 		}
-		if ($this->getContent() instanceof Content)
-			$this->getContent()->xmlSerializeUsingWriter($feedWriter, 'content');
+		if ($this->getContent() instanceof Content) {}
+			$feedWriter->writeRaw($this->getContent()->xmlSerialize());
 		if ($this->getLinks()->count() > 0) {
 			foreach ($this->getLinks() as $link) {
 				/** @var Link $link */
-				$link->xmlSerializeUsingWriter($feedWriter);
+				$feedWriter->writeRaw($link->xmlSerialize());
 			}
 		}
-		if ($this->getSummary() instanceof Text)
-			$this->getSummary()->xmlSerializeUsingWriter($feedWriter, 'summary');
+		if ($this->getSummary() instanceof Text) {
+			$this->getSummary()->setTagName('summary');
+			$feedWriter->writeRaw($this->getSummary()->xmlSerialize());
+		}
 
 		if ($this->getCategories()->count() > 0) {
 			foreach ($this->getCategories() as $category) {
 				/** @var Category $category */
-				$category->xmlSerializeUsingWriter($feedWriter);
+				$feedWriter->writeRaw($category->xmlSerialize());
 			}
 		}
 		if ($this->getContributors()->count() > 0) {
 			foreach ($this->getContributors() as $contributor) {
 				/** @var Person $contributor */
-				$contributor->xmlSerializeUsingWriter($feedWriter, 'contributor');
+				$contributor->setTagName('contributor');
+				$feedWriter->writeRaw($contributor->xmlSerialize());
 			}
 		}
 		if ($this->getPublished() instanceof \DateTime)
 			$feedWriter->writeElement('published', $this->getPublished()->format(\DateTime::ATOM));
-		if ($this->getSource() instanceof Feed)
-			$this->getSource()->xmlSerializeUsingWriter($feedWriter, 'source');
-		if ($this->getRights() instanceof Text)
-			$this->getRights()->xmlSerializeUsingWriter($feedWriter, 'rights');
+		if ($this->getSource() instanceof Feed) {
+			$this->getSource()->setTagName('source');
+			$feedWriter->writeRaw($this->getSource()->xmlSerialize());
+		}
+		if ($this->getRights() instanceof Text) {
+			$this->getRights()->setTagName('rights');
+			$feedWriter->writeRaw($this->getRights()->xmlSerialize());
+		}
 
 		$feedWriter->endElement();
 	}

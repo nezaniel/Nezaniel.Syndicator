@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An RSS channel image
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#ltimagegtSubelementOfLtchannelgt
  */
-class Image implements XmlWriterSerializableInterface {
+class Image extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var string
@@ -46,6 +46,11 @@ class Image implements XmlWriterSerializableInterface {
 	 * @var string
 	 */
 	protected $description;
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'image';
 
 
 	/**
@@ -153,11 +158,10 @@ class Image implements XmlWriterSerializableInterface {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'image') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeElement('url', $this->getUrl());
 		$feedWriter->writeElement('title', $this->getTitle());

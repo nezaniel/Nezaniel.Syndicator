@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An RSS source
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#ltsourcegtSubelementOfLtitemgt
  */
-class Source implements XmlWriterSerializableInterface {
+class Source extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var string
@@ -26,6 +26,11 @@ class Source implements XmlWriterSerializableInterface {
 	 * @var string
 	 */
 	protected $url;
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'source';
 
 
 	/**
@@ -55,11 +60,10 @@ class Source implements XmlWriterSerializableInterface {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'source') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeAttribute('url', $this->getUrl());
 		$feedWriter->writeRaw($this->getName());

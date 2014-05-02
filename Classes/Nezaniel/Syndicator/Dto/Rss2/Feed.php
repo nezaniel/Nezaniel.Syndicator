@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Dto\AbstractXmlSerializableFeed;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An RSS feed
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html
  */
-class Feed extends AbstractXmlSerializableFeed {
+class Feed extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var Channel
@@ -32,7 +32,7 @@ class Feed extends AbstractXmlSerializableFeed {
 
 
 	/**
-	 * @return \Nezaniel\Syndicator\Dto\Rss2\Channel
+	 * @return Channel
 	 */
 	public function getChannel() {
 		return $this->channel;
@@ -46,8 +46,9 @@ class Feed extends AbstractXmlSerializableFeed {
 	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
 		$feedWriter->startElement('rss');
 		$feedWriter->writeAttribute('version', '2.0');
+		$feedWriter->writeAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
 
-		$this->channel->xmlSerializeUsingWriter($feedWriter);
+		$feedWriter->writeRaw($this->channel->xmlSerialize());
 
 		$feedWriter->endElement();
 	}

@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Atom;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An Atom category construct
  *
  * @see http://www.atomenabled.org/developers/syndication/#category
  */
-class Category implements XmlWriterSerializableInterface{
+class Category extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var string
@@ -31,6 +31,11 @@ class Category implements XmlWriterSerializableInterface{
 	 * @var string
 	 */
 	protected $label = '';
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'category';
 
 
 	/**
@@ -69,11 +74,10 @@ class Category implements XmlWriterSerializableInterface{
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'category') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeAttribute('term', $this->getTerm());
 		if ($this->getScheme() !== '')

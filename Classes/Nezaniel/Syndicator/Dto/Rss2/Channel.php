@@ -8,15 +8,15 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 use Nezaniel\Syndicator\Core\Syndicator;
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
 
 /**
  * An RSS channel
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#requiredChannelElements
  */
-class Channel implements XmlWriterSerializableInterface {
+class Channel extends AbstractXmlWriterSerializable {
 
 	/* Required elements */
 	/**
@@ -112,9 +112,19 @@ class Channel implements XmlWriterSerializableInterface {
 	protected $skipDays;
 
 	/**
+	 * @var string
+	 */
+	protected $atomLink;
+
+	/**
 	 * @var array<Item>
 	 */
 	protected $items;
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'channel';
 
 
 	/**
@@ -136,6 +146,7 @@ class Channel implements XmlWriterSerializableInterface {
 	 * @param TextInput         $textInput
 	 * @param array             $skipHours
 	 * @param array             $skipDays
+	 * @param string            $atomLink
 	 * @param \SplObjectStorage $items
 	 */
 	public function __construct($title, $link, $description,
@@ -143,7 +154,7 @@ class Channel implements XmlWriterSerializableInterface {
 		\DateTime $pubDate = NULL, \SplObjectStorage $categories = NULL,
 		$generator = '', $docs = 'http://blogs.law.harvard.edu/tech/rss',
 		Cloud $cloud = NULL, $ttl = NULL, Image $image = NULL, $rating = '', TextInput $textInput = NULL,
-		array $skipHours = array(), array $skipDays = array(), \SplObjectStorage $items = NULL) {
+		array $skipHours = array(), array $skipDays = array(), $atomLink = '', \SplObjectStorage $items = NULL) {
 
 			$this->title = $title;
 			$this->link = $link;
@@ -164,6 +175,7 @@ class Channel implements XmlWriterSerializableInterface {
 			$this->textInput = $textInput;
 			$this->skipHours = $skipHours;
 			$this->skipDays = $skipDays;
+			$this->atomLink = $atomLink;
 			$this->items = ($items !== NULL ? $items : new \SplObjectStorage());
 	}
 
@@ -533,14 +545,27 @@ class Channel implements XmlWriterSerializableInterface {
 		$this->webMaster = $webMaster;
 	}
 
+	/**
+	 * @param string $atomLink
+	 */
+	public function setAtomLink($atomLink) {
+		$this->atomLink = $atomLink;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAtomLink() {
+		return $this->atomLink;
+	}
+
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'channel') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeElement('title', $this->getTitle());
 		$feedWriter->writeElement('link', $this->getLink());
@@ -563,7 +588,7 @@ class Channel implements XmlWriterSerializableInterface {
 		if ($this->getCategories()->count() > 0) {
 			foreach ($this->getCategories() as $category) {
 				/** @var Category $category */
-				$category->xmlSerializeUsingWriter($feedWriter);
+				$feedWriter->writeRaw($category->xmlSerialize());
 			}
 		}
 
@@ -572,15 +597,15 @@ class Channel implements XmlWriterSerializableInterface {
 		if ($this->getDocs() !== '')
 			$feedWriter->writeElement('docs', $this->getDocs());
 		if ($this->getCloud() instanceof Cloud)
-			$this->getCloud()->xmlSerializeUsingWriter($feedWriter);
+			$feedWriter->writeRaw($this->getCloud()->xmlSerialize());
 		if ($this->getTtl() !== NULL)
 			$feedWriter->writeElement('ttl', $this->getTtl());
 		if ($this->getImage() instanceof Image)
-			$this->getImage()->xmlSerializeUsingWriter($feedWriter);
+			$feedWriter->writeRaw($this->getImage()->xmlSerialize());
 		if ($this->getRating() !== '')
 			$feedWriter->writeElement('rating', $this->getRating());
 		if ($this->getTextInput() instanceof TextInput)
-			$this->getTextInput()->xmlSerializeUsingWriter($feedWriter);
+			$feedWriter->writeRaw($this->getTextInput()->xmlSerialize());
 
 		if (sizeof($this->getSkipHours()) > 0) {
 			$feedWriter->startElement('skipHours');
@@ -598,10 +623,18 @@ class Channel implements XmlWriterSerializableInterface {
 			$feedWriter->endElement();
 		}
 
+		if ($this->getAtomLink() !== '') {
+			$feedWriter->startElement('atom:link');
+			$feedWriter->writeAttribute('href', $this->getAtomLink());
+			$feedWriter->writeAttribute('rel', 'self');
+			$feedWriter->writeAttribute('type', Syndicator::CONTENTTYPE_RSS2);
+			$feedWriter->endElement();
+		}
+
 		if ($this->getItems()->count() > 0) {
 			foreach ($this->getItems() as $item) {
 				/** @var Item $item */
-				$item->xmlSerializeUsingWriter($feedWriter);
+				$feedWriter->writeRaw($item->xmlSerialize());
 			}
 		}
 

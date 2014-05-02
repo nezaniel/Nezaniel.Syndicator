@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Atom;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An Atom text construct
  *
  * @see http://www.atomenabled.org/developers/syndication/#text
  */
-class Text implements XmlWriterSerializableInterface {
+class Text extends AbstractXmlWriterSerializable {
 
 	const TYPE_TEXT = 'text';
 	const TYPE_HTML = 'html';
@@ -60,11 +60,10 @@ class Text implements XmlWriterSerializableInterface {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName) {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeAttribute('type', $this->getType());
 		$feedWriter->writeRaw($this->getContent());

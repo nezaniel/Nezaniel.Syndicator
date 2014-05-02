@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An RSS text input reference
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#lttextinputgtSubelementOfLtchannelgt
  */
-class TextInput implements XmlWriterSerializableInterface {
+class TextInput extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var string
@@ -36,6 +36,11 @@ class TextInput implements XmlWriterSerializableInterface {
 	 * @var string
 	 */
 	protected $link;
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'textInput';
 
 
 	/**
@@ -83,11 +88,10 @@ class TextInput implements XmlWriterSerializableInterface {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'textInput') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		$feedWriter->writeElement('title', $this->getTitle());
 		$feedWriter->writeElement('description', $this->getDescription());

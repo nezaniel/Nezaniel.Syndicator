@@ -8,14 +8,14 @@ namespace Nezaniel\Syndicator\Dto\Atom;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
  * An Atom generator construct
  *
  * @see http://www.atomenabled.org/developers/syndication/#feed
  */
-class Generator implements XmlWriterSerializableInterface {
+class Generator extends AbstractXmlWriterSerializable {
 
 	/**
 	 * @var string
@@ -31,6 +31,11 @@ class Generator implements XmlWriterSerializableInterface {
 	 * @var string
 	 */
 	protected $version = '';
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'generator';
 
 
 	/**
@@ -68,11 +73,10 @@ class Generator implements XmlWriterSerializableInterface {
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @param string $tagName
 	 * @return void
 	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'generator') {
-		$feedWriter->startElement($tagName);
+	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
+		$feedWriter->startElement($this->getTagName());
 
 		if ($this->getUri() !== '')
 			$feedWriter->writeAttribute('uri', $this->getUri());

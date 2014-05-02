@@ -8,16 +8,15 @@ namespace Nezaniel\Syndicator\Dto\Atom;
  * the terms of the GNU General Public License, either version 3 of the   *
  * License, or (at your option) any later version.                        *
  *                                                                        */
+use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 use Nezaniel\Syndicator\Core\Syndicator;
-use Nezaniel\Syndicator\Core\XmlWriterSerializableInterface;
-use Nezaniel\Syndicator\Dto\AbstractXmlSerializableFeed;
 
 /**
  * An Atom Feed
  *
  * @see http://www.atomenabled.org/developers/syndication/#feed
  */
-class Feed extends AbstractXmlSerializableFeed implements XmlWriterSerializableInterface {
+class Feed extends AbstractXmlWriterSerializable {
 
 	/* Required elements */
 	/**
@@ -89,6 +88,11 @@ class Feed extends AbstractXmlSerializableFeed implements XmlWriterSerializableI
 	 */
 	protected $entries;
 
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'feed';
+
 
 	/**
 	 * @param string            $id
@@ -125,6 +129,7 @@ class Feed extends AbstractXmlSerializableFeed implements XmlWriterSerializableI
 			$this->rights = $rights;
 			$this->subtitle = $subtitle;
 			$this->entries = ($entries !== NULL ? $entries : new \SplObjectStorage());
+			$this->tagName = 'feed';
 	}
 
 	/**
@@ -406,68 +411,71 @@ class Feed extends AbstractXmlSerializableFeed implements XmlWriterSerializableI
 
 	/**
 	 * @param \XMLWriter $feedWriter
-	 * @return void
+	 * @return string
 	 */
 	public function xmlSerializeInternal(\XMLWriter $feedWriter) {
-		$this->xmlSerializeUsingWriter($feedWriter);
-	}
-
-	/**
-	 * @param \XMLWriter $feedWriter
-	 * @param string     $tagName
-	 * @return void
-	 */
-	public function xmlSerializeUsingWriter(\XMLWriter $feedWriter, $tagName = 'feed') {
-		$feedWriter->startElement('feed');
-		$feedWriter->writeAttribute('xmlns', 'http://www.w3.org/2005/Atom');
+		if ($this->getTagName() === 'feed') {
+			$feedWriter->startElement($this->getTagName());
+			$feedWriter->writeAttribute('xmlns', 'http://www.w3.org/2005/Atom');
+		}
 
 		$feedWriter->writeElement('id', $this->getId());
-		$this->getTitle()->xmlSerializeUsingWriter($feedWriter, 'title');
+		$this->getTitle()->setTagName('title');
+		$feedWriter->writeRaw($this->getTitle()->xmlSerialize());
 		$feedWriter->writeElement('updated', $this->getUpdated()->format(\DateTime::ATOM));
 
 		if ($this->getAuthors()->count() > 0) {
 			foreach ($this->getAuthors() as $author) {
 				/** @var Person $author */
-				$author->xmlSerializeUsingWriter($feedWriter, 'author');
+				$author->setTagName('author');
+				$feedWriter->writeRaw($author->xmlSerialize());
 			}
 		}
 		if ($this->getLinks()->count() > 0) {
 			foreach ($this->getLinks() as $link) {
 				/** @var Link $link */
-				$link->xmlSerializeUsingWriter($feedWriter);
+				$feedWriter->writeRaw($link->xmlSerialize());
 			}
 		}
 
 		if ($this->getCategories()->count() > 0) {
 			foreach ($this->getCategories() as $category) {
 				/** @var Category $category */
-				$category->xmlSerializeUsingWriter($feedWriter);
+				$feedWriter->writeRaw($category->xmlSerialize());
 			}
 		}
 		if ($this->getContributors()->count() > 0) {
 			foreach ($this->getContributors() as $contributor) {
 				/** @var Person $contributor */
-				$contributor->xmlSerializeUsingWriter($feedWriter, 'contributor');
+				$contributor->setTagName('contributor');
+				$feedWriter->writeRaw($contributor->xmlSerialize());
 			}
 		}
 		if ($this->getGenerator() instanceof Generator)
-			$this->getGenerator()->xmlSerializeUsingWriter($feedWriter);
+			$feedWriter->writeRaw($this->getGenerator()->xmlSerialize());
 		if ($this->getIcon() !== '')
 			$feedWriter->writeElement('icon', $this->getIcon());
 		if ($this->getLogo() !== '')
 			$feedWriter->writeElement('logo', $this->getLogo());
-		if ($this->getRights() instanceof Text)
-			$this->getRights()->xmlSerializeUsingWriter($feedWriter, 'rights');
-		if ($this->getSubtitle() instanceof Text)
-			$this->getSubtitle()->xmlSerializeUsingWriter($feedWriter, 'subtitle');
+		if ($this->getRights() instanceof Text) {
+			$this->getRights()->setTagName('rights');
+			$feedWriter->writeRaw($this->getRights()->xmlSerialize());
+		}
+		if ($this->getSubtitle() instanceof Text) {
+			$this->getSubtitle()->setTagName('subtitle');
+			$feedWriter->writeRaw($this->getSubtitle()->xmlSerialize());
+		}
+
 		if ($this->getEntries()->count() > 0) {
 			foreach ($this->getEntries() as $entry) {
 				/** @var Entry $entry */
-				$entry->xmlSerializeUsingWriter($feedWriter);
+				$feedWriter->writeRaw($entry->xmlSerialize());
 			}
 		}
 
-		$feedWriter->endElement();
+		if ($this->getTagName() === 'feed') {
+			$feedWriter->endElement();
+		}
 	}
 
 }
