@@ -11,11 +11,11 @@ namespace Nezaniel\Syndicator\Dto\Atom;
 use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
- * An Atom category construct
+ * An Atom Category implementation
  *
  * @see http://www.atomenabled.org/developers/syndication/#category
  */
-class Category extends AbstractXmlWriterSerializable {
+class Category extends AbstractXmlWriterSerializable implements CategoryInterface {
 
 	/**
 	 * @var string

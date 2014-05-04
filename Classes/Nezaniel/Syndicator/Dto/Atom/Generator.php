@@ -11,11 +11,11 @@ namespace Nezaniel\Syndicator\Dto\Atom;
 use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
- * An Atom generator construct
+ * An Atom Generator implementation
  *
  * @see http://www.atomenabled.org/developers/syndication/#feed
  */
-class Generator extends AbstractXmlWriterSerializable {
+class Generator extends AbstractXmlWriterSerializable implements GeneratorInterface{
 
 	/**
 	 * @var string

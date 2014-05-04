@@ -11,11 +11,11 @@ namespace Nezaniel\Syndicator\Dto\Atom;
 use TYPO3\Flow\Annotations as Flow;
 
 /**
- * An Atom content construct
+ * An Atom Content implementation
  *
  * @see http://www.atomenabled.org/developers/syndication/#contentElement
  */
-class Content extends Text {
+class Content extends Text implements ContentInterface{
 
 	/**
 	 * @var string

@@ -11,11 +11,11 @@ namespace Nezaniel\Syndicator\Dto\Atom;
 use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
- * An Atom person construct
+ * An Atom person implementation
  *
  * @see http://www.atomenabled.org/developers/syndication/#person
  */
-class Person extends AbstractXmlWriterSerializable {
+class Person extends AbstractXmlWriterSerializable implements PersonInterface {
 
 	/**
 	 * @var string

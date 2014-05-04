@@ -11,37 +11,11 @@ namespace Nezaniel\Syndicator\Dto\Atom;
 use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
- * An Atom link construct
+ * An Atom Link implementation
  *
  * @see http://www.atomenabled.org/developers/syndication/#link
  */
-class Link extends AbstractXmlWriterSerializable{
-
-	/**
-	 * An alternate representation of the entry or feed, for example a permalink to the html version of the entry, or the front page of the weblog.
-	 */
-	const REL_ALTERNATE = 'alternate';
-
-	/**
-	 * A related resource which is potentially large in size and might require special handling, for example an audio or video recording.
-	 */
-	const REL_ENCLOSURE = 'enclosure';
-
-	/**
-	 * A document related to the entry or feed.
-	 */
-	const REL_RELATED = 'related';
-
-	/**
-	 * The feed itself.
-	 */
-	const REL_SELF = 'self';
-
-	/**
-	 * The source of the information provided in the entry.
-	 */
-	const REL_VIA = 'via';
-
+class Link extends AbstractXmlWriterSerializable implements  LinkInterface {
 
 	/**
 	 * @var string

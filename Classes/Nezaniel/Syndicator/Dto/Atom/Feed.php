@@ -12,11 +12,11 @@ use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 use Nezaniel\Syndicator\Core\Syndicator;
 
 /**
- * An Atom Feed
+ * An Atom Feed implementation
  *
  * @see http://www.atomenabled.org/developers/syndication/#feed
  */
-class Feed extends AbstractXmlWriterSerializable {
+class Feed extends AbstractXmlWriterSerializable implements FeedInterface {
 
 	/* Required elements */
 	/**

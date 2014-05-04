@@ -11,16 +11,11 @@ namespace Nezaniel\Syndicator\Dto\Atom;
 use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
- * An Atom text construct
+ * An Atom Text implementation
  *
  * @see http://www.atomenabled.org/developers/syndication/#text
  */
-class Text extends AbstractXmlWriterSerializable {
-
-	const TYPE_TEXT = 'text';
-	const TYPE_HTML = 'html';
-	const TYPE_XHTML = 'xhtml';
-
+class Text extends AbstractXmlWriterSerializable implements TextInterface {
 
 	/**
 	 * @var string
