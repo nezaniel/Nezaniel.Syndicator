@@ -182,73 +182,40 @@ class AtomInlineRenderer {
 	}
 
 	/**
-	 * @param Atom\EntryInterface $entry
+	 * @param Atom\InlineRenderableEntryInterface $entry
 	 * @param string              $tagName
 	 * @return string
 	 */
-	public function renderEntry(Atom\EntryInterface $entry, $tagName = 'entry') {
+	public function renderEntry(Atom\InlineRenderableEntryInterface $entry, $tagName = 'entry') {
 		$feedWriter = new \XMLWriter();
 		$feedWriter->openMemory();
 		$feedWriter->setIndent(FALSE);
 
 		$feedWriter->startElement($tagName);
 
-		$feedWriter->writeElement('id', $entry->getId());
-		if ($entry->getTitle() instanceof Atom\TextInterface) {
-			$this->renderText($entry->getTitle(), 'title');
+		if (($id = $entry->getId()) !== NULL) {
+			$feedWriter->writeElement('id', $entry->getId());
 		}
+
+		$feedWriter->writeRaw($entry->renderTitle());
+
 		if ($entry->getUpdated() instanceof \DateTime) {
 			$feedWriter->writeElement('updated', $entry->getUpdated()->format(\DateTime::ATOM));
 		}
 
-		if (sizeof ($entry->getAuthors()) > 0) {
-			foreach ($entry->getAuthors() as $author) {
-				if ($author instanceof Atom\PersonInterface) {
-					$this->renderPerson($author, 'author');
-				}
-			}
-		}
+		$feedWriter->writeRaw($entry->renderAuthors());
+		$feedWriter->writeRaw($entry->renderContent());
+		$feedWriter->writeRaw($entry->renderLinks());
+		$feedWriter->writeRaw($entry->renderSummary());
+		$feedWriter->writeRaw($entry->renderCategories());
+		$feedWriter->writeRaw($entry->renderContributors());
 
-		if ($entry->getContent() instanceof Atom\ContentInterface) {
-			$this->renderContent($entry->getContent());
-		}
-
-		if (sizeof($entry->getLinks()) > 0) {
-			foreach ($entry->getLinks() as $link) {
-				if ($link instanceof Atom\LinkInterface) {
-					$this->renderLink($link);
-				}
-			}
-		}
-
-		if ($entry->getSummary() instanceof Atom\TextInterface) {
-			$this->renderText($entry->getSummary(), 'summary');
-		}
-
-		if (sizeof($entry->getCategories()) > 0) {
-			foreach ($entry->getCategories() as $category) {
-				if ($category instanceof Atom\CategoryInterface) {
-					$this->renderCategory($category);
-				}
-			}
-		}
-
-		if (sizeof($entry->getContributors()) > 0) {
-			foreach ($entry->getContributors() as $contributor) {
-				if ($contributor instanceof Atom\PersonInterface) {
-					$this->renderPerson($contributor, 'contributor');
-				}
-			}
-		}
-
-		if ($entry->getPublished() instanceof \DateTime)
+		if ($entry->getPublished() instanceof \DateTime) {
 			$feedWriter->writeElement('published', $entry->getPublished()->format(\DateTime::ATOM));
-		if ($entry->getSource() instanceof Atom\FeedInterface) {
-			$this->renderFeed($entry->getSource(), 'source');
 		}
-		if ($entry->getRights() instanceof Atom\TextInterface) {
-			$this->renderText($entry->getRights(), 'rights');
-		}
+
+		$feedWriter->writeRaw($entry->renderSource());
+		$feedWriter->writeRaw($entry->renderRights());
 
 		$feedWriter->endElement();
 
