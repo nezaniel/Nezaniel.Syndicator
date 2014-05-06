@@ -15,19 +15,25 @@ use Nezaniel\Syndicator\Dto\Atom as Atom;
  */
 class AtomInlineRenderer {
 
+	const FEEDMODE_FEED = 'feed';
+	const FEEDMODE_SOURCE = 'source';
+
 	/**
 	 * @param Atom\InlineRenderableFeedInterface $feed
-	 * @param string                             $tagName
+	 * @param string                             $feedMode
 	 * @return string
 	 */
-	public function renderFeed(Atom\InlineRenderableFeedInterface $feed, $tagName = 'feed') {
+	public function renderFeed(Atom\InlineRenderableFeedInterface $feed, $feedMode = self::FEEDMODE_FEED) {
+		if ($feedMode !== self::FEEDMODE_FEED && $feedMode !== self::FEEDMODE_SOURCE) {
+			return '';
+		}
 		$feedWriter = new \XMLWriter();
 		$feedWriter->openMemory();
 		$feedWriter->setIndent(FALSE);
 
-		$feedWriter->startElement($tagName);
+		$feedWriter->startElement($feedMode);
 
-		if ($tagName === 'feed') {
+		if ($feedMode === self::FEEDMODE_FEED) {
 			$feedWriter->writeAttribute('xmlns', 'http://www.w3.org/2005/Atom');
 		}
 
@@ -54,7 +60,8 @@ class AtomInlineRenderer {
 
 		$feedWriter->writeRaw($feed->renderRights());
 		$feedWriter->writeRaw($feed->renderSubtitle());
-		$feedWriter->writeRaw($feed->renderEntries());
+		if ($feedMode === self::FEEDMODE_FEED)
+			$feedWriter->writeRaw($feed->renderEntries());
 
 		$feedWriter->endElement();
 
