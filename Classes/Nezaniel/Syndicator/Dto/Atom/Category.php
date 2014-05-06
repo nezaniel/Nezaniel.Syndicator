@@ -45,8 +45,10 @@ class Category extends AbstractXmlWriterSerializable implements CategoryInterfac
 	 */
 	public function __construct($term, $scheme = '', $label = '') {
 		$this->term = $term;
-		$this->scheme = $scheme;
-		$this->label = $label;
+		if (is_string($scheme))
+			$this->scheme = $scheme;
+		if (is_string($label))
+			$this->label = $label;
 	}
 
 
@@ -70,7 +72,7 @@ class Category extends AbstractXmlWriterSerializable implements CategoryInterfac
 	public function getLabel() {
 		return $this->label;
 	}
-	
+
 
 	/**
 	 * @param \XMLWriter $feedWriter
