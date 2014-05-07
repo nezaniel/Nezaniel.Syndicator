@@ -15,7 +15,7 @@ use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#lttextinputgtSubelementOfLtchannelgt
  */
-class TextInput extends AbstractXmlWriterSerializable {
+class TextInput extends AbstractXmlWriterSerializable implements TextInputInterface {
 
 	/**
 	 * @var string

@@ -15,7 +15,7 @@ use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#ltimagegtSubelementOfLtchannelgt
  */
-class Image extends AbstractXmlWriterSerializable {
+class Image extends AbstractXmlWriterSerializable implements ImageInterface {
 
 	/**
 	 * @var string

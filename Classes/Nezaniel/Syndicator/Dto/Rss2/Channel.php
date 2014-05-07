@@ -16,7 +16,7 @@ use Nezaniel\Syndicator\Core\Syndicator;
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#requiredChannelElements
  */
-class Channel extends AbstractXmlWriterSerializable {
+class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 
 	/* Required elements */
 	/**

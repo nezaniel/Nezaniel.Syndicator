@@ -11,12 +11,12 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
 use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
- * An RSS cloud
+ * An RSS2 Cloud implementation
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#ltcloudgtSubelementOfLtchannelgt
  * @see http://cyber.law.harvard.edu/rss/soapMeetsRss.html#rsscloudInterface
  */
-class Cloud extends AbstractXmlWriterSerializable {
+class Cloud extends AbstractXmlWriterSerializable implements CloudInterface {
 
 	/**
 	 * @var string

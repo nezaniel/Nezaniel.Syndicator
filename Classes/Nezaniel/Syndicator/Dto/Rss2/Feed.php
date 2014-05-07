@@ -15,7 +15,7 @@ use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html
  */
-class Feed extends AbstractXmlWriterSerializable {
+class Feed extends AbstractXmlWriterSerializable implements FeedInterface {
 
 	/**
 	 * @var Channel

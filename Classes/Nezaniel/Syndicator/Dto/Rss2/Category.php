@@ -11,11 +11,11 @@ namespace Nezaniel\Syndicator\Dto\Rss2;
 use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
 
 /**
- * An RSS category
+ * An RSS2 Category implementation
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#ltcategorygtSubelementOfLtitemgt
  */
-class Category extends AbstractXmlWriterSerializable {
+class Category extends AbstractXmlWriterSerializable implements CategoryInterface {
 
 	/**
 	 * @var string

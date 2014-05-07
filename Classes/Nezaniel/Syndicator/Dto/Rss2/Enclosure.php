@@ -15,7 +15,7 @@ use Nezaniel\Syndicator\Core\AbstractXmlWriterSerializable;
  *
  * @see http://cyber.law.harvard.edu/rss/rss.html#ltenclosuregtSubelementOfLtitemgt
  */
-class Enclosure extends AbstractXmlWriterSerializable {
+class Enclosure extends AbstractXmlWriterSerializable implements EnclosureInterface {
 
 	/**
 	 * @var string

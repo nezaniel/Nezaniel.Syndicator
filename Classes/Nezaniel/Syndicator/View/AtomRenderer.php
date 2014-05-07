@@ -11,26 +11,10 @@ namespace Nezaniel\Syndicator\View;
 use Nezaniel\Syndicator\Dto\Atom as Atom;
 
 /**
- * An XML renderer for Atom feeds
+ * An XML renderer for Atom constructs
  */
-class AtomRenderer {
+class AtomRenderer extends AbstractFeedRenderer {
 
-	const MODE_NESTED = 'nested';
-	const MODE_INLINE = 'inline';
-
-
-	/**
-	 * @var \XMLWriter
-	 */
-	protected $feedWriter;
-	
-
-	/**
-	 *
-	 */
-	public function __construct() {
-		$this->feedWriter = new \XMLWriter();
-	}
 
 	/**
 	 * @param Atom\FeedInterface $feed
@@ -38,7 +22,6 @@ class AtomRenderer {
 	 * @return string
 	 */
 	public function renderFeed(Atom\FeedInterface $feed, $tagName = 'feed') {
-		$this->feedWriter = new \XMLWriter();
 		$this->feedWriter->openMemory();
 		$this->feedWriter->setIndent(FALSE);
 
@@ -57,14 +40,14 @@ class AtomRenderer {
 		if ($feed->getUpdated() instanceof \DateTime) {
 			$this->feedWriter->writeElement('updated', $feed->getUpdated()->format(\DateTime::ATOM));
 		}
-		
+
 		if (sizeof($feed->getAuthors()) > 0) {
 			foreach ($feed->getAuthors() as $author) {
 				if ($author instanceof Atom\PersonInterface) {
 					$this->renderPerson($author, 'author');
 				}
 			}
-		}	
+		}
 
 		if (sizeof($feed->getLinks()) > 0) {
 			foreach ($feed->getLinks() as $link) {
