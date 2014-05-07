@@ -53,31 +53,35 @@ class Rss2InlineRenderer {
 		$feedWriter->writeElement('link', $channel->getLink());
 		$feedWriter->writeElement('description', $channel->getDescription());
 
-		if ($channel->getLanguage() !== '')
+		if ($channel->getLanguage() !== NULL)
 			$feedWriter->writeElement('language', $channel->getLanguage());
-		if ($channel->getCopyright() !== '')
+		if ($channel->getCopyright() !== NULL)
 			$feedWriter->writeElement('copyright', $channel->getCopyright());
-		if ($channel->getManagingEditor() !== '')
+		if ($channel->getManagingEditor() !== NULL)
 			$feedWriter->writeElement('managingEditor', $channel->getManagingEditor());
-		if ($channel->getWebMaster() !== '')
+		if ($channel->getWebMaster() !== NULL)
 			$feedWriter->writeElement('webMaster', $channel->getWebMaster());
 		if ($channel->getPubDate() instanceof \DateTime)
 			$feedWriter->writeElement('pubDate', $channel->getPubDate()->format(\DateTime::RSS));
 
-		$now = new \DateTime();
-		$feedWriter->writeElement('lastBuildDate', $now->format(\DateTime::RSS));
+		if ($channel->getLastBuildDate() instanceof \DateTime) {
+			$lastBuildDate = $channel->getLastBuildDate();
+		} else {
+			$lastBuildDate = new \DateTime();
+		}
+		$feedWriter->writeElement('lastBuildDate', $lastBuildDate->format(\DateTime::RSS));
 
 		$feedWriter->writeRaw($channel->renderCategories());
 
-		if ($channel->getGenerator() !== '')
+		if ($channel->getGenerator() !== NULL)
 			$feedWriter->writeElement('generator', $channel->getGenerator());
-		if ($channel->getDocs() !== '')
-			$feedWriter->writeElement('docs', $channel->getDocs());
+		$feedWriter->writeElement('docs', $channel->getDocs() !== NULL ? $channel->getDocs() : 'http://blogs.law.harvard.edu/tech/rss');
+
 		$feedWriter->writeRaw($channel->renderCloud());
 		if ($channel->getTtl() !== NULL)
 			$feedWriter->writeElement('ttl', $channel->getTtl());
 		$feedWriter->writeRaw($channel->renderImage());
-		if ($channel->getRating() !== '')
+		if ($channel->getRating() !== NULL)
 			$feedWriter->writeElement('rating', $channel->getRating());
 		$feedWriter->writeRaw($channel->renderTextInput());
 
@@ -97,9 +101,9 @@ class Rss2InlineRenderer {
 			$feedWriter->endElement();
 		}
 
-		if ($channel->getAtomLink() !== '') {
+		if ($channel->getAtomLinkUrl() !== NULL) {
 			$feedWriter->startElement('atom:link');
-			$feedWriter->writeAttribute('href', $channel->getAtomLink());
+			$feedWriter->writeAttribute('href', $channel->getAtomLinkUrl());
 			$feedWriter->writeAttribute('rel', LinkInterface::REL_SELF);
 			$feedWriter->writeAttribute('type', Syndicator::CONTENTTYPE_RSS2);
 			$feedWriter->endElement();
@@ -123,7 +127,7 @@ class Rss2InlineRenderer {
 		$feedWriter->setIndent(FALSE);
 		$feedWriter->startElement($tagName);
 
-		if (($domain = $category->getDomain()) !== '') {
+		if (($domain = $category->getDomain()) !== NULL) {
 			$feedWriter->writeAttribute('domain', $domain);
 		}
 		$feedWriter->writeRaw($category->getName());
@@ -176,7 +180,7 @@ class Rss2InlineRenderer {
 		if ($image->getHeight() !== NULL) {
 			$feedWriter->writeElement('height', $image->getHeight());
 		}
-		if ($image->getDescription() !== '') {
+		if ($image->getDescription() !== NULL) {
 			$feedWriter->writeElement('description', $image->getDescription());
 		}
 
@@ -217,22 +221,22 @@ class Rss2InlineRenderer {
 		$feedWriter->setIndent(FALSE);
 		$feedWriter->startElement($tagName);
 
-		if ($item->getTitle() !== '')
+		if ($item->getTitle() !== NULL)
 			$feedWriter->writeElement('title', $item->getTitle());
-		if ($item->getLink() !== '')
+		if ($item->getLink() !== NULL)
 			$feedWriter->writeElement('link', $item->getLink());
-		if ($item->getDescription() !== '')  {
+		if ($item->getDescription() !== NULL)  {
 			$feedWriter->startElement('description');
 			$feedWriter->writeCdata($item->getDescription());
 			$feedWriter->endElement();
 		}
-		if ($item->getAuthor() !== '')
+		if ($item->getAuthor() !== NULL)
 			$feedWriter->writeElement('author', $item->getAuthor());
 		$feedWriter->writeRaw($item->renderCategories());
-		if ($item->getComments() !== '')
+		if ($item->getComments() !== NULL)
 			$feedWriter->writeElement('comments', $item->getComments());
 		$feedWriter->writeRaw($item->renderEnclosure());
-		if ($item->getGuid() !== '') {
+		if ($item->getGuid() !== NULL) {
 			$feedWriter->startElement('guid');
 			$feedWriter->writeAttribute('isPermaLink', $item->getPermaLink()?'true':'false');
 			$feedWriter->writeRaw($item->getGuid());

@@ -62,6 +62,11 @@ interface InlineRenderableChannelInterface {
 	public function getLanguage();
 
 	/**
+	 * @return \DateTime
+	 */
+	public function getLastBuildDate();
+
+	/**
 	 * @return string
 	 */
 	public function getLink();
@@ -114,6 +119,6 @@ interface InlineRenderableChannelInterface {
 	/**
 	 * @return string
 	 */
-	public function getAtomLink();
+	public function getAtomLinkUrl();
 
 }

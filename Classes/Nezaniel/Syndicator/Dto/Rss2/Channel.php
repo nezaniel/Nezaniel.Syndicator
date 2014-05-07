@@ -62,6 +62,11 @@ class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 	protected $pubDate;
 
 	/**
+	 * @return \DateTime
+	 */
+	protected $lastBuildDate;
+
+	/**
 	 * @var \SplObjectStorage<Category>
 	 */
 	protected $categories;
@@ -114,7 +119,7 @@ class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 	/**
 	 * @var string
 	 */
-	protected $atomLink;
+	protected $atomLinkUrl;
 
 	/**
 	 * @var array<Item>
@@ -136,6 +141,7 @@ class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 	 * @param string            $managingEditor
 	 * @param string            $webMaster
 	 * @param \DateTime         $pubDate
+	 * @param \DateTime         $lastBuildDate
 	 * @param \SplObjectStorage $categories
 	 * @param string            $generator
 	 * @param string            $docs
@@ -146,15 +152,15 @@ class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 	 * @param TextInput         $textInput
 	 * @param array             $skipHours
 	 * @param array             $skipDays
-	 * @param string            $atomLink
+	 * @param string            $atomLinkUrl
 	 * @param \SplObjectStorage $items
 	 */
 	public function __construct($title, $link, $description,
 		$language = '', $copyright = '', $managingEditor = '', $webMaster = '',
-		\DateTime $pubDate = NULL, \SplObjectStorage $categories = NULL,
+		\DateTime $pubDate = NULL, \DateTime $lastBuildDate = NULL, \SplObjectStorage $categories = NULL,
 		$generator = '', $docs = 'http://blogs.law.harvard.edu/tech/rss',
 		Cloud $cloud = NULL, $ttl = NULL, Image $image = NULL, $rating = '', TextInput $textInput = NULL,
-		array $skipHours = array(), array $skipDays = array(), $atomLink = '', \SplObjectStorage $items = NULL) {
+		array $skipHours = array(), array $skipDays = array(), $atomLinkUrl = '', \SplObjectStorage $items = NULL) {
 
 			$this->title = $title;
 			$this->link = $link;
@@ -166,6 +172,7 @@ class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 			$this->webMaster = $webMaster;
 			$this->generator = ($generator !== '' ? $generator : 'Nezaniel.Syndicator ' . Syndicator::VERSION);
 			$this->pubDate = $pubDate;
+			$this->lastBuildDate = $lastBuildDate;
 			$this->categories = ($categories !== NULL ? $categories : new \SplObjectStorage());
 			$this->docs = $docs;
 			$this->cloud = $cloud;
@@ -175,7 +182,7 @@ class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 			$this->textInput = $textInput;
 			$this->skipHours = $skipHours;
 			$this->skipDays = $skipDays;
-			$this->atomLink = $atomLink;
+			$this->atomLinkUrl = $atomLinkUrl;
 			$this->items = ($items !== NULL ? $items : new \SplObjectStorage());
 	}
 
@@ -349,6 +356,20 @@ class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 	 */
 	public function setLanguage($language) {
 		$this->language = $language;
+	}
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getLastBuildDate() {
+		return $this->lastBuildDate;
+	}
+
+	/**
+	 * @param \DateTime $lastBuildDate
+	 */
+	public function setLastBuildDate(\DateTime $lastBuildDate) {
+		$this->lastBuildDate = $lastBuildDate;
 	}
 
 	/**
@@ -546,17 +567,17 @@ class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 	}
 
 	/**
-	 * @param string $atomLink
+	 * @param string $atomLinkUrl
 	 */
-	public function setAtomLink($atomLink) {
-		$this->atomLink = $atomLink;
+	public function setAtomLinkUrl($atomLinkUrl) {
+		$this->atomLinkUrl = $atomLinkUrl;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getAtomLink() {
-		return $this->atomLink;
+	public function getAtomLinkUrl() {
+		return $this->atomLinkUrl;
 	}
 
 
@@ -623,9 +644,9 @@ class Channel extends AbstractXmlWriterSerializable implements ChannelInterface{
 			$feedWriter->endElement();
 		}
 
-		if ($this->getAtomLink() !== '') {
+		if ($this->getAtomLinkUrl() !== '') {
 			$feedWriter->startElement('atom:link');
-			$feedWriter->writeAttribute('href', $this->getAtomLink());
+			$feedWriter->writeAttribute('href', $this->getAtomLinkUrl());
 			$feedWriter->writeAttribute('rel', 'self');
 			$feedWriter->writeAttribute('type', Syndicator::CONTENTTYPE_RSS2);
 			$feedWriter->endElement();

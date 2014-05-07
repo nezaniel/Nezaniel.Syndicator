@@ -53,9 +53,9 @@ class AtomInlineRenderer {
 		$feedWriter->writeRaw($feed->renderContributors());
 		$feedWriter->writeRaw($feed->renderGenerator());
 
-		if (($icon = $feed->getIcon()) !== '')
+		if (($icon = $feed->getIcon()) !== NULL)
 			$feedWriter->writeElement('icon', $icon);
-		if (($logo = $feed->getLogo()) !== '')
+		if (($logo = $feed->getLogo()) !== NULL)
 			$feedWriter->writeElement('logo', $logo);
 
 		$feedWriter->writeRaw($feed->renderRights());
@@ -126,13 +126,13 @@ class AtomInlineRenderer {
 		$feedWriter->startElement($tagName);
 
 		$feedWriter->writeAttribute('href', $link->getHref());
-		if ($link->getRel() !== '')
+		if ($link->getRel() !== NULL)
 			$feedWriter->writeAttribute('rel', $link->getRel());
-		if ($link->getType() !== '')
+		if ($link->getType() !== NULL)
 			$feedWriter->writeAttribute('type', $link->getType());
-		if ($link->getHreflang() !== '')
+		if ($link->getHreflang() !== NULL)
 			$feedWriter->writeAttribute('hreflang', $link->getHreflang());
-		if ($link->getTitle() !== '')
+		if ($link->getTitle() !== NULL)
 			$feedWriter->writeAttribute('title', $link->getTitle());
 		if ($link->getLength() !== NULL)
 			$feedWriter->writeAttribute('length', $link->getLength());
@@ -155,9 +155,9 @@ class AtomInlineRenderer {
 		$feedWriter->startElement($tagName);
 
 		$feedWriter->writeAttribute('term', $category->getTerm());
-		if ($category->getScheme() !== '')
+		if ($category->getScheme() !== NULL)
 			$feedWriter->writeAttribute('scheme', $category->getScheme());
-		if ($category->getLabel() !== '')
+		if ($category->getLabel() !== NULL)
 			$feedWriter->writeAttribute('label', $category->getLabel());
 
 		$feedWriter->endElement();
@@ -177,9 +177,9 @@ class AtomInlineRenderer {
 
 		$feedWriter->startElement($tagName);
 
-		if ($generator->getUri() !== '')
+		if ($generator->getUri() !== NULL)
 			$feedWriter->writeAttribute('uri', $generator->getUri());
-		if ($generator->getVersion() !== '')
+		if ($generator->getVersion() !== NULL)
 			$feedWriter->writeAttribute('version', $generator->getVersion());
 		$feedWriter->writeRaw($generator->getName());
 
@@ -242,7 +242,7 @@ class AtomInlineRenderer {
 		$feedWriter->startElement($tagName);
 
 		$feedWriter->writeAttribute('type', $content->getType());
-		if ($content->getSrc() !== '')
+		if ($content->getSrc() !== NULL)
 			$feedWriter->writeAttribute('src', $content->getSrc());
 		$feedWriter->writeRaw($content->getContent());
 
