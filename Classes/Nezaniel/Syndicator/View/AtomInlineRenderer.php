@@ -53,9 +53,11 @@ class AtomInlineRenderer {
 		$feedWriter->writeRaw($feed->renderContributors());
 		$feedWriter->writeRaw($feed->renderGenerator());
 
-		if (($icon = $feed->getIcon()) !== NULL)
+		$icon = $feed->getIcon();
+		if (!empty($icon))
 			$feedWriter->writeElement('icon', $icon);
-		if (($logo = $feed->getLogo()) !== NULL)
+		$logo = $feed->getLogo();
+		if (!empty($logo))
 			$feedWriter->writeElement('logo', $logo);
 
 		$feedWriter->writeRaw($feed->renderRights());
@@ -211,7 +213,10 @@ class AtomInlineRenderer {
 		}
 
 		$feedWriter->writeRaw($entry->renderAuthors());
-		$feedWriter->writeRaw($entry->renderContent());
+		$content = $entry->renderContent();
+		if (!empty($content)) {
+			$feedWriter->writeRaw($content);
+		}
 		$feedWriter->writeRaw($entry->renderLinks());
 		$feedWriter->writeRaw($entry->renderSummary());
 		$feedWriter->writeRaw($entry->renderCategories());
